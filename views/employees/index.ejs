@@ -1,0 +1,90 @@
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between mb-3">
+    <h3>Employees</h3>
+    <a href="/employees/new" class="btn btn-primary">Add New</a>
+  </div>
+
+  <!-- Filters -->
+  <form method="get" class="row g-3 mb-4">
+
+    <div class="col-md-3">
+      <input type="text" name="search" class="form-control" placeholder="Search name or email" value="<%= search || '' %>">
+    </div>
+
+    <div class="col-md-3">
+      <select name="department" class="form-select">
+        <option value="">All Departments</option>
+        <% departments.forEach(d => { %>
+          <option value="<%= d._id %>" <%= department == d._id ? "selected" : "" %>><%= d.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <input type="text" name="jobTitle" class="form-control" placeholder="Job Title" value="<%= jobTitle || '' %>">
+    </div>
+
+    <div class="col-md-3">
+      <button class="btn btn-dark w-100">Filter</button>
+    </div>
+
+  </form>
+
+  <!-- Table -->
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Job Title</th>
+        <th>Department</th>
+        <th>Supervisor</th>
+        <th style="width:150px;">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% employees.forEach(emp => { %>
+      <tr>
+        <td><%= emp.firstName %> <%= emp.lastName || '' %></td>
+        <td><%= emp.email %></td>
+        <td><%= emp.jobTitle || '' %></td>
+        <td><%= emp.department ? emp.department.name : '' %></td>
+        <td>
+          <%= emp.supervisor ? emp.supervisor.firstName + " " + (emp.supervisor.lastName || "") : "" %>
+        </td>
+        <td>
+          <a href="/employees/<%= emp._id %>/edit" class="btn btn-sm btn-primary">Edit</a>
+
+          <form action="/employees/<%= emp._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this employee?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <div class="mt-3">
+    <% const totalPages = Math.ceil(total / limit); %>
+    <% for (let p = 1; p <= totalPages; p++) { %>
+      <% 
+        const qs = new URLSearchParams({
+          page: p,
+          limit,
+          search: search || '',
+          department: department || '',
+          jobTitle: jobTitle || ''
+        }).toString(); 
+      %>
+
+      <a href="/employees?<%= qs %>"
+         class="btn btn-sm <%= p == page ? 'btn-primary' : 'btn-outline-secondary' %> me-1">
+         <%= p %>
+      </a>
+    <% } %>
+  </div>
+
+</div>

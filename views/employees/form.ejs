@@ -1,0 +1,81 @@
+
+<div class="container mt-4">
+
+  <h3><%= employee && employee._id ? "Edit Employee" : "New Employee" %></h3>
+  <hr>
+
+  <form action="<%= employee && employee._id ? '/employees/' + employee._id + '?_method=PUT' : '/employees' %>" method="post" class="row g-3">
+
+    <div class="col-md-6">
+      <label class="form-label">First Name</label>
+      <input name="firstName" class="form-control" value="<%= employee.firstName || '' %>" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Last Name</label>
+      <input name="lastName" class="form-control" value="<%= employee.lastName || '' %>">
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Email</label>
+      <input name="email" type="email" class="form-control" value="<%= employee.email || '' %>" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Job Title</label>
+      <input name="jobTitle" class="form-control" value="<%= employee.jobTitle || '' %>">
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Department</label>
+      <select name="department" class="form-select">
+        <option value="">-- Select Department --</option>
+        <% departments.forEach(d => { %>
+          <option value="<%= d._id %>" <%= employee.department == d._id ? "selected" : "" %>><%= d.name %></option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Supervisor</label>
+      <select name="supervisor" class="form-select">
+        <option value="">-- None --</option>
+        <% supervisors.forEach(s => { %>
+          <option value="<%= s._id %>" <%= employee.supervisor == s._id ? "selected" : "" %>>
+            <%= s.firstName %> <%= s.lastName || '' %> ( <%= s.email %> )
+          </option>
+        <% }) %>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Country</label>
+      <select id="country" name="country" class="form-select"></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">State</label>
+      <select id="state" name="state" class="form-select"></select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">City</label>
+      <select id="city" name="city" class="form-select"></select>
+    </div>
+
+    <div class="col-12 mt-3">
+      <button class="btn btn-success">Save</button>
+      <a href="/employees" class="btn btn-secondary ms-2">Cancel</a>
+    </div>
+
+  </form>
+
+</div>
+
+<script>
+  window.__INITIAL_LOCATION = {
+    country: "<%= employee.country || '' %>",
+    state: "<%= employee.state || '' %>",
+    city: "<%= employee.city || '' %>"
+  };
+</script>
