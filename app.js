@@ -137,7 +137,7 @@ app.get("/departments", async (req, res) => {
 });
 
 // Create department 
-app.post("/departments", async (req, res) => {
+app.post("/departments/new", async (req, res) => {
     await Department.create({ name: req.body.name });
     res.redirect("/departments");
 });
