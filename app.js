@@ -6,7 +6,7 @@ const methodOverride = require("method-override");
 const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const Employee = require("./models/employees")
-const Department  =require("./models/department")
+const Department = require("./models/department")
 
 const PORT = process.env.PORT || 3000;
 const MongoDB_Url = process.env.MONGODB_URL;
@@ -14,8 +14,8 @@ const MongoDB_Url = process.env.MONGODB_URL;
 
 // ------------------ DB CONNECTION ------------------
 mongoose.connect(MongoDB_Url)
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 
 // ------------------ MIDDLEWARE ------------------
@@ -31,7 +31,7 @@ app.set("views", path.join(__dirname, "views"));
 
 // Home Redirect
 app.get("/", (req, res) => {
-    res.redirect("/employees");
+  res.redirect("/employees");
 });
 
 // Show all employees
@@ -40,7 +40,7 @@ app.get("/employees", async (req, res) => {
   const department = req.query.department || "";
   const jobTitle = req.query.jobTitle || "";
   const page = parseInt(req.query.page) || 1;
-  const limit = 5;   
+  const limit = 5;
 
   const departments = await Department.find();
 
@@ -84,63 +84,87 @@ app.get("/employees", async (req, res) => {
 
 // New employee form
 app.get("/employees/new", async (req, res) => {
-    const departments = await Department.find();
-    const supervisors = await Employee.find();
-    res.render("employees/form", { employee: {}, departments, supervisors });
+  const departments = await Department.find();
+  const supervisors = await Employee.find();
+  res.render("employees/form", { employee: {}, departments, supervisors });
 });
 
 // Create new employee
 app.post("/employees", async (req, res) => {
-    if (!req.body.department) delete req.body.department;
-    if (!req.body.supervisor) delete req.body.supervisor;
+  if (!req.body.department) delete req.body.department;
+  if (!req.body.supervisor) delete req.body.supervisor;
 
-    await Employee.create(req.body);
-    res.redirect("/employees");
+  await Employee.create(req.body);
+  res.redirect("/employees");
 });
 
 // Edit employee form
 app.get("/employees/:id/edit", async (req, res) => {
-    const employee = await Employee.findById(req.params.id);
-    const departments = await Department.find();
-    const supervisors = await Employee.find({ _id: { $ne: req.params.id } });
+  const employee = await Employee.findById(req.params.id);
+  const departments = await Department.find();
+  const supervisors = await Employee.find({ _id: { $ne: req.params.id } });
 
-    res.render("employees/form", { employee, departments, supervisors });
+  res.render("employees/form", { employee, departments, supervisors });
 });
 
 // Update employee
 app.put("/employees/:id", async (req, res) => {
-    if (!req.body.department) delete req.body.department;
-    if (!req.body.supervisor) delete req.body.supervisor;
+  if (!req.body.department) delete req.body.department;
+  if (!req.body.supervisor) delete req.body.supervisor;
 
-    await Employee.findByIdAndUpdate(req.params.id, req.body);
-    res.redirect("/employees");
-    
-    
+  await Employee.findByIdAndUpdate(req.params.id, req.body);
+  res.redirect("/employees");
+
+
 });
 
 app.delete("/employees/:id", async (req, res) => {
-    let {id} =req.params
-    await Employee.findByIdAndDelete(id)
-    console.log("data was deleted")
-    res.redirect("/employees");
-    
-    
+  let { id } = req.params
+  await Employee.findByIdAndDelete(id)
+  console.log("data was deleted")
+  res.redirect("/employees");
+
+
 });
 
 
-// ------------------ DEPARTMENT ROUTES  ------------
+// ------------------ DEPARTMENT ROUTES ------------------
 
-// Show all departments
+// List all departments
 app.get("/departments", async (req, res) => {
-    const departments = await Department.find();
-    res.render("departments/index", { departments });
+  const departments = await Department.find();
+  res.render("departments/index", { departments });
 });
 
-// Create department 
-app.post("/departments/new", async (req, res) => {
-    await Department.create({ name: req.body.name });
-    res.redirect("/departments");
+// Show create form
+app.get("/departments/new", (req, res) => {
+  res.render("departments/new");
 });
+
+// Create new department
+app.post("/departments", async (req, res) => {
+  await Department.create({ name: req.body.name });
+  res.redirect("/departments");
+});
+
+// Show edit form
+app.get("/departments/:id/edit", async (req, res) => {
+  const department = await Department.findById(req.params.id);
+  res.render("departments/edit", { department });
+});
+
+// Update department
+app.put("/departments/:id", async (req, res) => {
+  await Department.findByIdAndUpdate(req.params.id, { name: req.body.name });
+  res.redirect("/departments");
+});
+
+// Delete department
+app.delete("/departments/:id", async (req, res) => {
+  await Department.findByIdAndDelete(req.params.id);
+  res.redirect("/departments");
+});
+
 
 // ------------------ SERVER ----
 app.listen(PORT, () => console.log("Server running on http://localhost:3000"));
