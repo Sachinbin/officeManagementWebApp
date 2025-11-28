@@ -1,0 +1,73 @@
+<%- include('partials/header') %>
+<div class="row">
+  <div class="col-md-5">
+    <div class="card p-3 fade-in">
+      <h4>Add Employee</h4>
+      <form action="/employees/add" method="POST">
+        <div class="mb-2"><input name="name" class="form-control" placeholder="Name" required/></div>
+        <div class="mb-2"><input name="email" class="form-control" placeholder="Email" required/></div>
+        <div class="mb-2"><input name="age" type="number" class="form-control" placeholder="Age"/></div>
+        <div class="mb-2">
+          <select name="department" class="form-control">
+            <option value="">Select Department</option>
+            <% departments.forEach(function(d){ %>
+              <option value="<%= d._id %>"><%= d.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <select id="country" name="country" class="form-control">
+            <option value="">Select Country</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <select id="state" name="state" class="form-control">
+            <option value="">Select State</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <select id="city" name="city" class="form-control">
+            <option value="">Select City</option>
+          </select>
+        </div>
+
+        <button class="btn btn-success w-100">Add Employee</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-7">
+    <div class="card p-3 fade-in">
+      <h4>Employees</h4>
+      <table class="table table-striped">
+        <thead><tr><th>Name</th><th>Email</th><th>Dept</th><th>Location</th><th>Action</th></tr></thead>
+        <tbody>
+          <% employees.forEach(function(emp){ %>
+            <tr>
+              <td><%= emp.name %></td>
+              <td><%= emp.email %></td>
+              <td><%= emp.department ? emp.department.name : '-' %></td>
+              <td><%= [emp.city, emp.state, emp.country].filter(Boolean).join(', ') %></td>
+              <td>
+                <form method="POST" action="/employees/delete/<%= emp._id %>">
+                  <button class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof initLocationDropdowns === 'function') {
+      initLocationDropdowns('country', 'state', 'city');
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>
